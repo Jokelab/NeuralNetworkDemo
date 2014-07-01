@@ -22,27 +22,34 @@
         <ul>
             <li>Draw a character (A, B, C.. or whatever you like) in the left square.</li>
             <li>Click 'Read'. A downsampled version of the drawing appears in the right square.</li>
+            <li>The network now tries to guess what you have drawn.</li>
         </ul>
-        Draw a character (A, B, C.. or whatever you like) in the left square.
-        click 'Read'
-        You'll now see a downsampled version of your drawing in the square on the right.
 
     </p>
-    <div style="float: left;">
-        <span>Your drawing (150 x 150)</span><br />
-        <canvas id="canvas" width="150" height="150"></canvas>
-    </div>
-    <div style="float: left; margin-left: 15px;">
-        <span>Outline grid (15x15)</span><br />
-        <canvas id="outlines" width="150" height="150"></canvas>
+    <div>
+        <div style="float: left;">
+            <span>Your drawing (150 x 150):</span><br />
+            <canvas id="canvas" width="150" height="150"></canvas>
+        </div>
+        <div style="float: left; margin-left: 15px;">
+            <span>Outline grid (15x15):</span><br />
+            <canvas id="outlines" width="150" height="150"></canvas>
+        </div>
+        <div id="output">
+
+        </div>
     </div>
     <div style="clear:both;">
         <button id="clear">Clear</button>
         <button id="read">Read</button>
     </div>
-    <div class="output">
-
+    <hr />
+    <div>
+        <input type="text" id="txtCharacter" />
+        <button id="addCharacter">Add character</button>
+        <button id="trainCharacter">Train character</button>
     </div>
+    
     <script>
         //create a neural network with only 2 layers
         var nn = new Network();
@@ -51,6 +58,7 @@
         nn.Layers.push(inputLayer, outputLayer);
 
 
+        //handler for the click event of the read button
         function readDrawing() {
             //downsample the drawing to a 15x15 grid, with zeros for empty spots and ones for coloured spots
             //the inputs variable will therefore hold 255 items with zeros and ones.
@@ -64,7 +72,43 @@
             //make the network 'think'
             nn.Think();
 
+            var bestGuess = outputLayer.BestGuess();
+            if (bestGuess != null) {
+                $("#output").html(bestGuess.Name);
+            }
+            else {
+                $("#output").html("Could not read your drawing.");
+            }
 
+        }
+
+        function addCharacter() {
+            var outputNeuron = new Neuron($("#txtCharacter").val())
+            inputLayer.ConnectNeuron(outputNeuron);
+            outputLayer.Neurons.push(outputNeuron);
+        }
+
+        function trainCharacter() {
+            //lookup the output neuron to train
+            var outputNeuron = outputLayer.GetNeuron($("#txtCharacter").val());
+            var learningRate = 0.01;
+
+            //fill the input layer
+            var drawing = getDownsampledDrawing();
+            for (var i = 0; i < drawing.length; i++) {
+                inputLayer.Neurons[i].AxonValue = drawing[i];
+            }
+       
+            //generate output for the given inputs
+            nn.Think()
+
+            //adjust weights using the delta 
+            var delta = 0;
+            for (var i=0; i<outputNeuron.Dendrites.length; i++){
+                var dendrite = outputNeuron.Dendrites[i];
+                delta = drawing[i] - outputNeuron.AxonValue;
+                dendrite.Weight += drawing[i] * delta * learningRate;
+            }
 
         }
 

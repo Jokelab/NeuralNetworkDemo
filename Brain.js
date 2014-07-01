@@ -43,9 +43,10 @@ var Layer = (function () {
         }
     };
 
-    Layer.prototype.Connect = function (layer) {
-        for (var i = 0; i < layer.Neurons.length; i++) {
-
+    //connects a neuron from -another- with all neurons in this layer 
+    Layer.prototype.ConnectNeuron = function (neuron) {
+        for (var i = 0; i < this.Neurons.length; i++) {
+            neuron.Dendrites.push(new Dendrite(this.Neurons[i]))
         }
     };
 
@@ -73,6 +74,8 @@ var Layer = (function () {
         return this.Neurons[bestGuessIndex];
     }
 
+    
+
     return Layer;
 }
 )();
@@ -82,7 +85,7 @@ var Neuron = (function () {
     function Neuron(name) {
         this.Name = name;
         this.Dendrites = [];
-        this.AxonValue = 0;
+        this.AxonValue = 0.5;
     }
 
     Neuron.prototype.Think = function () {
@@ -93,6 +96,7 @@ var Neuron = (function () {
                 sum += this.Dendrites[i].Value * this.Dendrites[i].Weight;
             }
         }
+        console.log(sum);
         //apply sigmoid function to transform the sum to a value between 0 and 1
         this.AxonValue = 1 / (1 + Math.exp(-sum));
 
@@ -104,7 +108,7 @@ var Neuron = (function () {
 var Dendrite = (function () {
     function Dendrite(sourceNeuron) {
         this.SourceNeuron = sourceNeuron;
-        this.Weight = 0;
+        this.Weight = Math.random();
     }
     return Dendrite;
 }

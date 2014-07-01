@@ -45,6 +45,8 @@ $(document).ready(function () {
     });
         
     $("#read").on("click", readDrawing);
+    $("#addCharacter").on("click", addCharacter);
+    $("#addCharacter").on("click", trainCharacter);
 
     var clickX = new Array();
     var clickY = new Array();
