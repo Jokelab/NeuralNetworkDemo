@@ -3,28 +3,21 @@
 <head>
     <title>Neural network demo</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="Brain.js"></script>
-    <script src="Ui.js"></script>
-    <style>
-        canvas {
-            border: 1px solid #000;
-        }
+    <script src="script/Brain.js"></script>
+    <script src="script/Ui.js"></script>
+    <script src="script/Ocr.js"></script>
 
-        #canvas{
-            cursor: pointer;
-        }
-    </style>
+    <link href="css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <h1>Neural network demo</h1>
+    <h1>Neural network demo - simple OCR</h1>
     <p>
-        Instructions:
+        Demo instructions:
         <ul>
-            <li>Draw a character (A, B, C.. or whatever you like) in the left square.</li>
-            <li>Click 'Read'. A downsampled version of the drawing appears in the right square.</li>
-            <li>The network now tries to guess what you have drawn.</li>
+            <li>Draw a character (A, B or C) in the left square.</li>
+            <li>Click 'Read'. A downsampled version of the drawing appears in the middle square.</li>
+            <li>The network now tries to guess what you have drawn and displays what it's best guess..</li>
         </ul>
-
     </p>
     <div>
         <div style="float: left;">
@@ -36,7 +29,11 @@
             <canvas id="outlines" width="150" height="150"></canvas>
         </div>
         <div id="output">
-
+            <span>
+                Output:<br />
+            </span>
+            <span id="bestGuess">
+            </span>
         </div>
     </div>
     <div style="clear:both;">
@@ -45,75 +42,11 @@
     </div>
     <hr />
     <div>
-        <input type="text" id="txtCharacter" />
-        <button id="addCharacter">Add character</button>
+        <input type="text" value="A" maxlength="1" id="txtCharacter" />
         <button id="trainCharacter">Train character</button>
-    </div>
-    
-    <script>
-        //create a neural network with only 2 layers
-        var nn = new Network();
-        var inputLayer = new Layer(255); //255 input neurons: one for each pixel in a 15x15 grid
-        var outputLayer = new Layer(0); //0 output neurons at this point
-        nn.Layers.push(inputLayer, outputLayer);
-
-
-        //handler for the click event of the read button
-        function readDrawing() {
-            //downsample the drawing to a 15x15 grid, with zeros for empty spots and ones for coloured spots
-            //the inputs variable will therefore hold 255 items with zeros and ones.
-            var drawing = getDownsampledDrawing();
-
-            //fill the input layer
-            for (var i = 0; i < drawing.length; i++) {
-                inputLayer.Neurons[i].AxonValue = drawing[i];
-            }
-
-            //make the network 'think'
-            nn.Think();
-
-            var bestGuess = outputLayer.BestGuess();
-            if (bestGuess != null) {
-                $("#output").html(bestGuess.Name);
-            }
-            else {
-                $("#output").html("Could not read your drawing.");
-            }
-
-        }
-
-        function addCharacter() {
-            var outputNeuron = new Neuron($("#txtCharacter").val())
-            inputLayer.ConnectNeuron(outputNeuron);
-            outputLayer.Neurons.push(outputNeuron);
-        }
-
-        function trainCharacter() {
-            //lookup the output neuron to train
-            var outputNeuron = outputLayer.GetNeuron($("#txtCharacter").val());
-            var learningRate = 0.01;
-
-            //fill the input layer
-            var drawing = getDownsampledDrawing();
-            for (var i = 0; i < drawing.length; i++) {
-                inputLayer.Neurons[i].AxonValue = drawing[i];
-            }
-       
-            //generate output for the given inputs
-            nn.Think()
-
-            //adjust weights using the delta 
-            var delta = 0;
-            for (var i=0; i<outputNeuron.Dendrites.length; i++){
-                var dendrite = outputNeuron.Dendrites[i];
-                delta = drawing[i] - outputNeuron.AxonValue;
-                dendrite.Weight += drawing[i] * delta * learningRate;
-            }
-
-        }
-
-
-    </script>
+        
+        <h2>Output neurons</h2>
+        <div id="outputValues"></div></div>
 </body>
 
 </html>

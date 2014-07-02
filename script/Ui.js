@@ -1,10 +1,14 @@
-﻿
+﻿/* Don't judge the code in this file please :)
+It facilitates the user interface of the demo.
+*/
+
 $(document).ready(function () {
-     context = document.getElementById("canvas").getContext("2d");
+    context = document.getElementById("canvas").getContext("2d");
 
     //create outline context
-     outlineContext = document.getElementById("outlines").getContext("2d");
+    outlineContext = document.getElementById("outlines").getContext("2d");
     outlineContext.fillStyle = "red";
+    outlineContext.strokeStyle = "gray";
 
     $('#canvas').mousedown(function (e) {
         var mouseX = e.pageX - this.offsetLeft;
@@ -21,7 +25,6 @@ $(document).ready(function () {
             redraw();
         }
     });
-
 
     $('#canvas').mouseup(function (e) {
         paint = false;
@@ -42,15 +45,17 @@ $(document).ready(function () {
         //clear outline context
         outlineContext.clearRect(0, 0, outlineContext.canvas.width, outlineContext.canvas.height);
 
-    });
-        
-    $("#read").on("click", readDrawing);
-    $("#addCharacter").on("click", addCharacter);
-    $("#addCharacter").on("click", trainCharacter);
+        //clear the guess
+        $("#bestGuess").text("");
 
-    var clickX = new Array();
-    var clickY = new Array();
-    var clickDrag = new Array();
+    });
+
+    $("#read").on("click", readDrawing);
+    $("#trainCharacter").on("click", trainCharacter);
+
+    var clickX = [];
+    var clickY = [];
+    var clickDrag = [];
     var paint;
 
     function addClick(x, y, dragging) {
@@ -78,8 +83,6 @@ $(document).ready(function () {
             context.stroke();
         }
     }
-
-
 }
 );
 
@@ -102,14 +105,17 @@ function getDownsampledDrawing() {
 
                     //draw red square on the outline context
                     outlineContext.fillRect(x, y, blockSize, blockSize);
+            
 
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                output.push(0);
+                output.push(-1);
             }
+
+            outlineContext.strokeRect(x, y, blockSize, blockSize);
 
         }
     }
