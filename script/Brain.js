@@ -14,8 +14,34 @@
 //The brain is the main neural network  class. It holds references to the network layer objects.
 var Brain = (function () {
 
-    function Brain() {
+    function Brain(brainData) {
         this.Layers = [];
+
+        //if brainData is provided, rebuild the brain based on a previous state
+        if (brainData !== null) {
+            for (var i = 0; i < brainData.Layers.length; i++) {
+                var layerData = brainData.Layers[i];
+                var layer = new Layer();
+                this.Layers.push(layer);
+                for (var j = 0; j < layerData.Neurons.length; j++) {
+                    var neuronData = layerData.Neurons[j];
+
+                    var neuron = new Neuron();
+                    neuron.AxonValue = neuronData.AxonValue;
+                    neuron.Name = neuronData.Name;
+                    layer.Neurons.push(neuron);
+                    if (i > 0) {
+                        //connect the neuron with all neurons in the previous layer
+                        this.Layers[i - 1].ConnectNeuron(neuron);
+                    }
+                    //set weights for each dendrite
+                    for (var k = 0; k < neuronData.Dendrites.length; k++) {
+                        neuron.Dendrites[k].Weight = neuronData.Dendrites[k].Weight;
+                    }
+                }
+
+            }
+        }
     }
 
     //make each layer in the network 'think' (generate output values)
@@ -25,7 +51,7 @@ var Brain = (function () {
         }
     };
 
-    //
+    //train an output neuron with some inputdata. The inputdata is considered a good example for the output neuron.
     Brain.prototype.Train = function (inputData, outputNeuron) {
 
         //no layers, no glory
@@ -34,7 +60,7 @@ var Brain = (function () {
         }
 
         //fill the first layer with input data to feed the network
-        var inputLayer = this.Layers[0]; 
+        var inputLayer = this.Layers[0];
         for (var i = 0; i < inputData.length; i++) {
             inputLayer.Neurons[i].AxonValue = inputData[i];
         }
@@ -58,6 +84,7 @@ var Brain = (function () {
 }
 )();
 
+//A layer is a collection of neurons. 
 var Layer = (function () {
 
     //the constructor. 
@@ -88,7 +115,7 @@ var Layer = (function () {
     //Search for a neuron with the supplied name
     Layer.prototype.GetNeuron = function (name) {
         for (var i = 0; i < this.Neurons.length; i++) {
-            if (this.Neurons[i].Name == name) {
+            if (this.Neurons[i].Name.toUpperCase() === name.toUpperCase()) {
                 return this.Neurons[i];
             }
         }
@@ -136,7 +163,7 @@ var Neuron = (function () {
             }
 
             //apply sigmoid function to transform the sum to a value between 0 and 1
-            //AxonValue is simply a sexy name.
+            //AxonValue is just a sexy name.
             this.AxonValue = 1 / (1 + Math.exp(-sum));
         }
     };
@@ -144,11 +171,12 @@ var Neuron = (function () {
 }
 )();
 
-//a dendrite represents a single connection to a neuron. The source neuron it is connected must be passed in the constructor.
+//A dendrite represents a an input connection to a neuron. 
+//The source neuron it is connected to must be passed in the constructor.
 var Dendrite = (function () {
     function Dendrite(sourceNeuron) {
         this.SourceNeuron = sourceNeuron;
-        this.Weight = 0;//Math.random();//initialize with a random weight
+        this.Weight = 0;
     }
     return Dendrite;
 }

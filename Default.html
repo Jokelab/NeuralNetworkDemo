@@ -3,20 +3,30 @@
 <head>
     <title>Neural network demo</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="brainfiles/ABC.js"></script>
     <script src="script/Brain.js"></script>
     <script src="script/Ui.js"></script>
     <script src="script/Ocr.js"></script>
+   
 
     <link href="css/style.css" rel="stylesheet" />
 </head>
 <body>
     <h1>Neural network demo - simple OCR</h1>
     <p>
-        Demo instructions:
+        <b>Demo instructions:</b>
         <ul>
             <li>Draw a character (A, B or C) in the left square.</li>
             <li>Click 'Read'. A downsampled version of the drawing appears in the middle square.</li>
-            <li>The network now tries to guess what you have drawn and displays what it's best guess..</li>
+            <li>The network now tries to guess what you have drawn and displays the character in the right right square.</li>
+        </ul>
+        <b>Training instructions:</b><br/>
+        The preloaded network only knows about the characters A, B and C. You can improve the recognition of these characters, or add new characters to your liking.
+        <ul>
+            <li>Type the character to train in the input field.</li>
+            <li>Draw the character in the left square.</li>
+            <li>Click 'Train character'.</li>
+            <li>Repeat this with different drawings of the same character to train the network.</li>
         </ul>
     </p>
     <div>
@@ -45,7 +55,6 @@
         <input type="text" value="A" maxlength="1" id="txtCharacter" />
         <button id="trainCharacter">Train character</button>
         
-        <h2>Output neurons</h2>
         <div id="outputValues"></div></div>
 </body>
 

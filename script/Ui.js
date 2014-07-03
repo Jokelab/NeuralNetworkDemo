@@ -1,5 +1,5 @@
 ﻿/* Don't judge the code in this file please :)
-It facilitates the user interface of the demo.
+It is only here to facilitate the user interface of the demo
 */
 
 $(document).ready(function () {
@@ -47,6 +47,7 @@ $(document).ready(function () {
 
         //clear the guess
         $("#bestGuess").text("");
+        $("#outputValues").html("");
 
     });
 
