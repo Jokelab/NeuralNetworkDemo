@@ -1,0 +1,29 @@
+﻿canvas {
+    border: 1px solid #000;
+}
+
+#canvas {
+    cursor: pointer;
+}
+
+#txtCharacter {
+    width: 20px;
+}
+
+
+#output {
+    float: left;
+    margin-left: 15px;
+}
+
+    #output span {
+        display: block;
+    }
+
+#bestGuess {
+    font-size: 130px;
+    text-align: center;
+        width: 150px;
+    height: 150px;
+    border: 1px solid #000;
+}

@@ -3,73 +3,50 @@
 <head>
     <title>Neural network demo</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="Brain.js"></script>
-    <script src="Ui.js"></script>
-    <style>
-        canvas {
-            border: 1px solid #000;
-        }
+    <script src="script/Brain.js"></script>
+    <script src="script/Ui.js"></script>
+    <script src="script/Ocr.js"></script>
 
-        #canvas{
-            cursor: pointer;
-        }
-    </style>
+    <link href="css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <h1>Neural network demo</h1>
+    <h1>Neural network demo - simple OCR</h1>
     <p>
-        Instructions:
+        Demo instructions:
         <ul>
-            <li>Draw a character (A, B, C.. or whatever you like) in the left square.</li>
-            <li>Click 'Read'. A downsampled version of the drawing appears in the right square.</li>
+            <li>Draw a character (A, B or C) in the left square.</li>
+            <li>Click 'Read'. A downsampled version of the drawing appears in the middle square.</li>
+            <li>The network now tries to guess what you have drawn and displays what it's best guess..</li>
         </ul>
-        Draw a character (A, B, C.. or whatever you like) in the left square.
-        click 'Read'
-        You'll now see a downsampled version of your drawing in the square on the right.
-
     </p>
-    <div style="float: left;">
-        <span>Your drawing (150 x 150)</span><br />
-        <canvas id="canvas" width="150" height="150"></canvas>
-    </div>
-    <div style="float: left; margin-left: 15px;">
-        <span>Outline grid (15x15)</span><br />
-        <canvas id="outlines" width="150" height="150"></canvas>
+    <div>
+        <div style="float: left;">
+            <span>Your drawing (150 x 150):</span><br />
+            <canvas id="canvas" width="150" height="150"></canvas>
+        </div>
+        <div style="float: left; margin-left: 15px;">
+            <span>Outline grid (15x15):</span><br />
+            <canvas id="outlines" width="150" height="150"></canvas>
+        </div>
+        <div id="output">
+            <span>
+                Output:<br />
+            </span>
+            <span id="bestGuess">
+            </span>
+        </div>
     </div>
     <div style="clear:both;">
         <button id="clear">Clear</button>
         <button id="read">Read</button>
     </div>
-    <div class="output">
-
-    </div>
-    <script>
-        //create a neural network with only 2 layers
-        var nn = new Network();
-        var inputLayer = new Layer(255); //255 input neurons: one for each pixel in a 15x15 grid
-        var outputLayer = new Layer(0); //0 output neurons at this point
-        nn.Layers.push(inputLayer, outputLayer);
-
-
-        function readDrawing() {
-            //downsample the drawing to a 15x15 grid, with zeros for empty spots and ones for coloured spots
-            //the inputs variable will therefore hold 255 items with zeros and ones.
-            var drawing = getDownsampledDrawing();
-
-            //fill the input layer
-            for (var i = 0; i < drawing.length; i++) {
-                inputLayer.Neurons[i].AxonValue = drawing[i];
-            }
-
-            //make the network 'think'
-            nn.Think();
-
-
-
-        }
-
-
-    </script>
+    <hr />
+    <div>
+        <input type="text" value="A" maxlength="1" id="txtCharacter" />
+        <button id="trainCharacter">Train character</button>
+        
+        <h2>Output neurons</h2>
+        <div id="outputValues"></div></div>
 </body>
 
 </html>
