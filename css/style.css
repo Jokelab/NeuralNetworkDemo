@@ -16,14 +16,14 @@
     margin-left: 15px;
 }
 
-    #output span {
-        display: block;
-    }
+#output span, #outputValues span {
+    display: block;
+}
 
 #bestGuess {
     font-size: 130px;
     text-align: center;
-        width: 150px;
+    width: 150px;
     height: 150px;
     border: 1px solid #000;
 }
